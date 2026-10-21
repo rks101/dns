@@ -4,8 +4,10 @@ DNS Domain Name System
 * dns
   * [NS Lookup](#ns-lookup) 
   * [Resolve DNS](#resolve-dns) 
-  * [The One with DNS root nameservers](#the-one-with-dns-root-nameservers) 
+  * [The One with DNS root nameservers](#the-one-with-dns-root-nameservers)
+  * [Top Level Domain TLD](#Top-Level-Domain-TLD)
   * [`dig` into DNS](#dig-into-dns)
+  * [DNS Hierarchy](#DNS-hierarchy)
   * [DNS Cache](#dns-cache)
   * [New domain](#new-domain)
   * [Know sub-domains](#know-sub\-domains)
@@ -506,10 +508,6 @@ An illustration on [Life of a DNS query](https://github.com/rks101/egnet/blob/ma
 
 ----
 
-[See sample DNS request and reply packets using **cloudshark**](https://www.cloudshark.org/captures/de434abca073)    
-
-----
-
 DNS Software: What software is the DNS server using?    
 Dig Dyno for version.bind, chaos class, and TXT record type; see the answer section.     
 
@@ -543,11 +541,7 @@ version.bind.		0	CH	NS	version.bind.
 
 ----
 
-## DNS Cache   
-
-[**DNS Cache**](https://www.keycdn.com/support/dns-cache)    
-
-[View and flush DNS Cache on Linux](https://www.makeuseof.com/view-and-flush-dns-cache-on-linux/), [link2](https://unix.stackexchange.com/questions/28553/how-to-read-the-local-dns-cache-contents)     
+## DNS Hierarchy    
 
 Q. Who has more entries in the DNS zone file - a root server, a TLD server, or a authoritative server?    
 A. A **TLD server** has the most entries, by a wide margin.   
@@ -558,6 +552,36 @@ Detailed answer:
 **Authoritative server** (for a single domain): The zone for something like example.com or iitb.ac.in usually has only a handful to a few hundred records (A, AAAA, SOA, NS, MX, TXT, CNAME, and so on). Large organizations can have more, but it's nowhere near TLD scale.    
 
 The root servers point to the TLDs, the TLDs point to every domain's authoritative servers, and the authoritative servers hold the actual answers for their own domains.    
+
+Q. Then, what is a recursive DNS server?    
+A. Refer-how does a DNS query work.    
+A **recursive DNS server** (also known as a recursive resolver) is the server that does the lookup work on behalf of a client (web browser). Your device doesn't walk the DNS hierarchy itself. It asks the recursive resolver, and the resolver goes and finds the answer.    
+
+Say you look up www.iitb.ac.in and the resolver has nothing cached (no local copy/record for iitb.ac.in):    
+
+- It asks a root nameserver: "Who handles .in?" The root nameserver replies with the .in TLD servers.
+- It asks a TLD server: "Who handles iitb.ac.in?" The TLD replies with iitb.ac.in's authoritative servers.
+- It asks the authoritative server: "What's the IP for www.iitb.ac.in?" This one gives the actual answer.
+- It returns the answer to your device and caches it (stores a local copy/record) for the duration of the record's TTL (seconds).
+
+A recursive DNS server:    
+- Does the recursion: Chasing referrals from root nameserver to TLD server to authoritative server so clients don't have to.
+- Caching: Storing answers (of resolved domains) so repeat lookups are answered instantly without going back through the DNS hierarchy. This caching greatly reduces load on root nameservers, TLD servers, and authoritative servers and makes browsing faster.
+- Can validate and filter domains, if configured: Many recursive resolvers perform DNSSEC validation, and some block malware or adult domains.
+
+Q. Where is recursive DNS server run?    
+A. Typically your ISP (the default on most home networks), or a public resolver such as Cloudflare (1.1.1.1), Google (8.8.8.8), or Quad9 (9.9.9.9) runs it. Organizations often run their own recursive DNS server (recursive resolver) internally. 
+
+Q. How does a recursive DNS server differ from an authoritative server?    
+A. An authoritative server holds the official records (ground truth or good copy) for specific zones and only answers about those. A recursive DNS server or resolver holds no zones of its own. Yes, it has no zone information of its own. It just queries others and caches what it learns.  
+
+----
+
+## DNS Cache   
+
+[**DNS Cache**](https://www.keycdn.com/support/dns-cache)    
+
+[View and flush DNS Cache on Linux](https://www.makeuseof.com/view-and-flush-dns-cache-on-linux/), [link2](https://unix.stackexchange.com/questions/28553/how-to-read-the-local-dns-cache-contents)     
 
 ----
 
