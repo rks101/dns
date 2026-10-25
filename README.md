@@ -211,6 +211,18 @@ f.root-servers.net.     7173    IN      AAAA    2001:500:2f::f
 ;; MSG SIZE  rcvd: 811
 ```
 
+For reading the above output, after dig HEADER, look for the following three sections:   
+```
+;; QUESTION SECTION:
+......
+
+;; ANSWER SECTION:
+......
+
+;; ADDITIONAL SECTION:
+......
+```
+
 Check these informative pages: [b.root-servers.org home](https://b.root-servers.org/) handling 5 billion queries a day, [a.root-servers.org metrics](https://a.root-servers.org/metrics), and [root-servers.org - map of root nameservers](https://root-servers.org/).    
 
 Q. There are countably finite 13 root nameservers (from a to m) run by 12 operator entities.   
