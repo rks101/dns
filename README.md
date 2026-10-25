@@ -15,6 +15,8 @@ DNS Domain Name System
 
 ## NS Lookup  
 
+`nslookup` can be used to query Internet domain name servers interactively.    
+
 ```
 $ nslookup
 > set q=ANY
