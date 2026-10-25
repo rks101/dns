@@ -134,9 +134,13 @@ When you type a URL in a web browser and get a DNS_PROBE_FINISHED_NXDOMAIN error
 
 DNS remains one of the most interesting topics in networking.    
 
-Do you know that each DNS resolver always knows the IP addresses of DNS root nameservers? This is not a new thing; this has always been the case. This info is actually hardwired or [hardcoded into BIND-9](https://github.com/isc-projects/bind9/blob/main/lib/dns/rootns.c) (bind9/lib/dns/rootns.c). [Old link](https://gitlab.isc.org/isc-projects/bind9/blob/4c3b063ef8bd6e47b13c1dac3087daa1301a78ac/lib/dns/rootns.c) has moved to GitHub. Look at this code [root_ns array](https://github.com/rks101/egnet/blob/main/images/root_ns.png); there are 13 DNS root nameservers, and the names are not case-sensitive. You can find A type DNS records for these 13 root name servers named from a to m (as of Jan 2022).    
+Do you know that each DNS resolver always knows the IP addresses of DNS root nameservers? This is not a new thing; this has always been the case. This info is actually [hardcoded into BIND-9](https://github.com/isc-projects/bind9/blob/main/lib/dns/rootns.c) (bind9/lib/dns/rootns.c). [Old link](https://gitlab.isc.org/isc-projects/bind9/blob/4c3b063ef8bd6e47b13c1dac3087daa1301a78ac/lib/dns/rootns.c) has moved to GitHub. Look at this code [root_ns array](https://github.com/rks101/egnet/blob/main/images/root_ns.png); there are 13 DNS root nameservers, and the names are not case-sensitive. You can find A type DNS records for these 13 root name servers named from a to m (as of Jan 2022).    
 
-[IANA](https://www.iana.org/) has listed the [root name servers](https://www.iana.org/domains/root/servers), and [DNS root hint and root zone files](https://www.iana.org/domains/root/files). [Map](https://www.google.com/maps/d/u/0/viewer?mid=1LcHEpzl-7RzziWzDa4h3BxJcbEo&hl=en&ll=24.71341537554179%2C36.13137070989961&z=2) of geographically distributed root name servers reachable using anycast - the same IP mapped to multiple DNS root servers - the one reachable first is returned in the DNS query's answer section.    
+Ref:    
+[RFC 1034 Domain Names - Concepts and Facilities](https://www.rfc-editor.org/rfc/rfc1034.txt)    
+[Root hints and priming query](https://btw.media/en/hint-replaced-by-answer-dns-root-priming)    
+
+[IANA](https://www.iana.org/) has listed the [root name servers](https://www.iana.org/domains/root/servers), and [DNS root hint and root zone files](https://www.iana.org/domains/root/files). [Map](https://www.google.com/maps/d/u/0/viewer?mid=1LcHEpzl-7RzziWzDa4h3BxJcbEo&hl=en&ll=24.71341537554179%2C36.13137070989961&z=2) of geographically distributed root name servers reachable using anycast (BGP routing to the topologically nearest instance) - multiple instances of the same root name server - the one reachable first is returned in the DNS query's answer section.    
 
 Note: BIND (Berkeley Internet Name Domain) is an implementation of a naming service or DNS used in our endpoint devices and networks to connect to the internet. [BIND source code](https://gitlab.isc.org/isc-projects/bind9) is hosted by ISC (Internet Systems Consortium). It was developed at UCB in 1984 and later maintained by ISC.     
 
@@ -247,7 +251,7 @@ Further, second-level domains are registered by organizations. When registering 
 
 ## dig into DNS
 
-Dig into DNS and query A (IP Address), SOA (Start of Authority - admin record), NS (name server), MX (mail server), TXT (domain ownership, to prevent mail spam), CNAME (canonical name or alias) records. Pay attention to the QUESTION, ANSWER, AUTHORITY, and ADDITIONAL sections in the output of dig.    
+Dig into DNS and query A (IP Address), SOA (Start of Authority - admin record), NS (name server), MX (mail server), TXT (SPF, DKIM, DMARC to defend against email spam, and verification tokens for domain ownership), CNAME (canonical name or alias) records. Pay attention to the QUESTION, ANSWER, AUTHORITY, and ADDITIONAL sections in the output of dig.    
 
 Note:- Do not ignore DNS TTL values. Sys admin should set DNS TTL values appropriately. See a few [DNS TTL basics](https://www.varonis.com/blog/dns-ttl) and [SOA TTL values](https://ns1.com/resources/understanding-ttl-values-in-dns-records).    
 
@@ -296,7 +300,7 @@ iitjammu.ac.in.		7174	IN	MX	3 ASPMX.L.GOOGLE.COM.
 
 ----
 
-Use dig to query the hostname IP address using public DNS, a faster way.    
+Use dig to query the hostname IP address using public DNS, bypassing the local resolver.    
 ```
 $ dig @8.8.8.8 iitjammu.ac.in
 
