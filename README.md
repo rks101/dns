@@ -539,8 +539,9 @@ $ dig @ns1.iitjammu.ac.in version.bind chaos txt
 ;; global options: +cmd
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 45153
-;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
-;; WARNING: recursion requested but not available
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1     <== Haha! aa flag is set, this means Authoritative server replied 
+;; WARNING: recursion requested but not available                        <== rd (Recursion Desired) flag is set by client,
+                                                                         <== server warns that recursion is not available 
 
 ;; OPT PSEUDOSECTION:
 ; EDNS: version: 0, flags:; udp: 4096
